@@ -1,6 +1,10 @@
+import UsersView from "./views/UsersView"
+
 function App() {
   return (
-    <h1>Hello world</h1>
+    <div className="container">
+      <UsersView />
+    </div>
   )
 }
 
