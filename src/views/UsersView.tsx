@@ -1,6 +1,11 @@
+import { useEffect } from 'react';
 import { users } from '../data/userData';
 
 const UsersView = () => {
+
+    useEffect(() => {
+
+    }, []);
 
     return (
         <>

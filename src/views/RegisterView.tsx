@@ -22,9 +22,14 @@ const RegisterView = () => {
     const password = watch('password');
 
     const handleRegister = async (formData: RegisterForm) => {
-        const data = await registerAccount(formData);
-        console.log(data);
-        reset();
+        try {
+            const data = await registerAccount(formData);
+            console.log(data);
+            reset();
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (

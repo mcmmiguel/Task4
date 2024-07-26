@@ -1,4 +1,7 @@
 import { useForm } from "react-hook-form"
+import { authenticateUser } from "../api/authAPI";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export type LoginForm = {
     email: string;
@@ -12,11 +15,26 @@ const LoginView = () => {
         password: '',
     }
 
+    const [errorAPI, setErrorAPI] = useState<string | null>();
+    const [isLoading, setIsLoading] = useState(false);
+
     const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginForm>({ defaultValues: initialValues });
 
-    const handleLogin = (formData: LoginForm) => {
-        console.log(formData);
-        reset();
+    const navigate = useNavigate();
+
+    const handleLogin = async (formData: LoginForm) => {
+        setIsLoading(true);
+        try {
+            await authenticateUser(formData);
+            reset();
+            navigate('/');
+        } catch (error) {
+            if (error instanceof Error) {
+                setErrorAPI(error.message);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -24,6 +42,9 @@ const LoginView = () => {
             <h1 className="text-center">Task4</h1>
             <hr />
             <h2 className="mt-10">Sign In</h2>
+            {errorAPI && <div className="alert alert-danger" role="alert">
+                {errorAPI}
+            </div>}
             <form
                 className="d-flex flex-column align-center needs-validation"
                 onSubmit={handleSubmit(handleLogin)}
@@ -60,7 +81,7 @@ const LoginView = () => {
                 </div>
 
 
-                <button className="btn btn-primary">Sign in</button>
+                <button className="btn btn-primary">{isLoading ? 'Signing in...' : 'Sign In'}</button>
             </form>
         </div>
     )
