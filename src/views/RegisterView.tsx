@@ -17,12 +17,14 @@ const RegisterView = () => {
         password_confirmation: '',
     }
 
-    const { register, handleSubmit, formState: { errors }, watch } = useForm({ defaultValues: initialValues });
+    const { register, handleSubmit, formState: { errors }, watch, reset } = useForm({ defaultValues: initialValues });
 
     const password = watch('password');
 
-    const handleLogin = async (formData: RegisterForm) => {
-        await registerAccount(formData);
+    const handleRegister = async (formData: RegisterForm) => {
+        const data = await registerAccount(formData);
+        console.log(data);
+        reset();
     }
 
     return (
@@ -32,7 +34,7 @@ const RegisterView = () => {
             <h2 className="mt-10">Register account</h2>
             <form
                 className="d-flex flex-column align-center needs-validation"
-                onSubmit={handleSubmit(handleLogin)}
+                onSubmit={handleSubmit(handleRegister)}
             >
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Name</label>
