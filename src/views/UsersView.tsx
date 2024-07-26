@@ -20,9 +20,9 @@ const UsersView = () => {
                 <table className="table">
                     <thead>
                         <tr>
-                            <div className='d-flex justify-content-center mx-5 my-2'>
-                                <input type="checkbox" />
-                            </div>
+                            <td>
+                                <input className='mx-5 my-2' type="checkbox" />
+                            </td>
                             <th scope="col">ID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Email</th>
@@ -33,19 +33,18 @@ const UsersView = () => {
                     </thead>
                     <tbody>
                         {users.map(user => (
-                            <tr key={user.id}>
-                                <div className='d-flex justify-content-center mx-5 my-2'>
-                                    <input type="checkbox" />
-                                </div>
+                            <tr className='table-row' key={user.id}>
+                                <td>
+                                    <input className='mx-5 my-2' type="checkbox" />
+                                </td>
                                 <td>{user.id}</td>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : '-'}</td>
                                 <td>{user.registrationTime ? new Date(user.registrationTime).toLocaleString() : '-'}</td>
-                                <td className={`text-light text-center rounded ${user.isBlocked ? 'bg-danger  ' : 'bg-success'}`}>{user.isBlocked ? 'Blocked' : 'Active'}</td>
+                                <td className={`text-center rounded ${user.isBlocked ? 'text-danger  ' : 'text-success'}`}>{user.isBlocked ? 'Blocked' : 'Active'}</td>
                             </tr>
                         ))}
-
                     </tbody>
                 </table>
             </main>
