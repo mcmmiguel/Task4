@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form"
 import { authenticateUser } from "../api/authAPI";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import FormMessage from "../components/FormMessage";
 
 export type LoginForm = {
     email: string;
@@ -34,6 +35,7 @@ const LoginView = () => {
             }
         } finally {
             setIsLoading(false);
+            setTimeout(() => setErrorAPI(null), 5000);
         }
     }
 
@@ -42,9 +44,7 @@ const LoginView = () => {
             <h1 className="text-center">Task4</h1>
             <hr />
             <h2 className="mt-10">Sign In</h2>
-            {errorAPI && <div className="alert alert-danger" role="alert">
-                {errorAPI}
-            </div>}
+            {errorAPI && <FormMessage type="error">{errorAPI}</FormMessage>}
             <form
                 className="d-flex flex-column align-center needs-validation"
                 onSubmit={handleSubmit(handleLogin)}
