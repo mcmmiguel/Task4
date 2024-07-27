@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { blockUser, getAllUsers, unlockUser } from '../api/usersAPI';
+import { blockUser, deleteUser, getAllUsers, unlockUser } from '../api/usersAPI';
 import { calculateDaysDifference } from '../utils';
+import { useNavigate } from 'react-router-dom';
 
 export type User = {
     id: number;
@@ -19,6 +20,8 @@ const UsersView = () => {
     const [isFetching, setIsFetching] = useState(false);
     const [, setIsLoading] = useState(false);
 
+    const navigate = useNavigate()
+
     const [selectedUsers, setSelectedUsers] = useState<User['id'][]>([]);
 
     useEffect(() => {
@@ -29,13 +32,14 @@ const UsersView = () => {
                 if (data) setUsersList(data);
             } catch (error) {
                 console.log(error);
+                navigate('/auth/login');
             } finally {
                 setIsLoading(false);
             }
         }
 
         if (userData) fetchUsers();
-    }, [userData, isFetching]);
+    }, [userData, isFetching, navigate]);
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
@@ -55,57 +59,42 @@ const UsersView = () => {
         });
     };
 
-    const handleBlockUser = async () => {
-        if (confirm('Are you sure to block this user(s)')) {
+    const processUsers = async (userIds: User['id'][], action: (userId: User['id']) => Promise<string>) => {
 
-            if (selectedUsers.length === 0) {
-                console.log("There is not selected users.");
-                return;
-            }
+        if (userIds.length === 0) return;
 
-            setIsFetching(true);
+        setIsFetching(true);
 
-            for (const userId of selectedUsers) {
-                try {
-                    console.log(`Bloqueando usuario con ID ${userId}...`);
-                    const data = await blockUser(userId);
-                    console.log(data);
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-
+        try {
+            await Promise.all(userIds.map(async userId => {
+                await action(userId);
+            }));
+        } catch (error) {
+            console.log('Error processing users:', error);
+        } finally {
             setIsFetching(false);
+        }
+    }
+
+    const handleBlockUser = async () => {
+        if (confirm('Are you sure to block this user(s)?')) {
+            processUsers(selectedUsers, blockUser);
         }
 
     }
 
     const handleUnlockUser = async () => {
-        if (confirm('Are you sure to unlock this user(s)')) {
-
-            if (selectedUsers.length === 0) {
-                console.log("There is not selected users.");
-                return;
-            }
-
-            setIsFetching(true);
-
-            for (const userId of selectedUsers) {
-                try {
-                    console.log(`Desbloqueando usuario con ID ${userId}...`);
-                    const data = await unlockUser(userId);
-                    console.log(data);
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-
-            setIsFetching(false);
+        if (confirm('Are you sure to unlock this user(s)?')) {
+            processUsers(selectedUsers, unlockUser);
         }
 
     }
 
-
+    const handleDeleteUser = async () => {
+        if (confirm('Are you sure to delete this user(s)?')) {
+            processUsers(selectedUsers, deleteUser);
+        }
+    }
 
     if (authLoading) return 'Loading...';
 
@@ -124,7 +113,7 @@ const UsersView = () => {
             <div className="d-flex" style={{ gap: 20 }}>
                 <button className="btn btn-outline-warning" onClick={handleBlockUser}>Block</button>
                 <button className="btn btn-outline-success" onClick={handleUnlockUser}>Unlock</button>
-                <button className="btn btn-danger">Delete</button>
+                <button className="btn btn-danger" onClick={handleDeleteUser}>Delete</button>
             </div>
 
             <main>
