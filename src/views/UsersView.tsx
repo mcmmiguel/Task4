@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { users } from '../data/userData';
 import { useAuth } from '../hooks/useAuth';
 import { getAllUsers } from '../api/usersAPI';
+import { calculateDaysDifference, calculateTimeDifference } from '../utils';
 
 export type User = {
     id: number;
     name: string;
     email: string;
     lastLogin?: string;
-    registrationTime?: string;
+    createdAt: string;
     isBlocked: boolean;
 }
 
@@ -116,7 +117,7 @@ const UsersView = () => {
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : '-'}</td>
-                                <td>{user.registrationTime ? new Date(user.registrationTime).toLocaleString() : '-'}</td>
+                                <td className='text-center'>{`${calculateDaysDifference(user.createdAt)}d`}</td>
                                 <td className={`text-center rounded ${user.isBlocked ? 'text-danger  ' : 'text-success'}`}>{user.isBlocked ? 'Blocked' : 'Active'}</td>
                             </tr>
                         ))}
