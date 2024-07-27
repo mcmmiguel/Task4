@@ -12,3 +12,27 @@ export async function getAllUsers() {
         }
     }
 }
+
+export async function unlockUser(userId: User['id']) {
+    try {
+        const { data } = await api.patch(`/users/unlock-user/${userId}`);
+        console.log(data);
+        return data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
+        }
+    }
+}
+
+export async function blockUser(userId: User['id']) {
+    try {
+        const { data } = await api.patch(`/users/block-user/${userId}`);
+        console.log(data);
+        return data;
+    } catch (error) {
+        if (isAxiosError(error) && error.response) {
+            throw new Error(error.response.data.error);
+        }
+    }
+}

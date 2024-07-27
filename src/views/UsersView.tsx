@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { getAllUsers } from '../api/usersAPI';
+import { blockUser, getAllUsers, unlockUser } from '../api/usersAPI';
 import { calculateDaysDifference } from '../utils';
 
 export type User = {
@@ -16,6 +16,7 @@ const UsersView = () => {
 
     const { userData, isLoading: authLoading } = useAuth();
     const [usersList, setUsersList] = useState<User[]>([]);
+    const [isFetching, setIsFetching] = useState(false);
     const [, setIsLoading] = useState(false);
 
     const [selectedUsers, setSelectedUsers] = useState<User['id'][]>([]);
@@ -34,7 +35,7 @@ const UsersView = () => {
         }
 
         if (userData) fetchUsers();
-    }, [userData]);
+    }, [userData, isFetching]);
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
@@ -54,6 +55,57 @@ const UsersView = () => {
         });
     };
 
+    const handleBlockUser = async () => {
+        if (confirm('Are you sure to block this user(s)')) {
+
+            if (selectedUsers.length === 0) {
+                console.log("There is not selected users.");
+                return;
+            }
+
+            setIsFetching(true);
+
+            for (const userId of selectedUsers) {
+                try {
+                    console.log(`Bloqueando usuario con ID ${userId}...`);
+                    const data = await blockUser(userId);
+                    console.log(data);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            setIsFetching(false);
+        }
+
+    }
+
+    const handleUnlockUser = async () => {
+        if (confirm('Are you sure to unlock this user(s)')) {
+
+            if (selectedUsers.length === 0) {
+                console.log("There is not selected users.");
+                return;
+            }
+
+            setIsFetching(true);
+
+            for (const userId of selectedUsers) {
+                try {
+                    console.log(`Desbloqueando usuario con ID ${userId}...`);
+                    const data = await unlockUser(userId);
+                    console.log(data);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            setIsFetching(false);
+        }
+
+    }
+
+
 
     if (authLoading) return 'Loading...';
 
@@ -70,8 +122,8 @@ const UsersView = () => {
             <hr />
 
             <div className="d-flex" style={{ gap: 20 }}>
-                <button className="btn btn-outline-warning">Block</button>
-                <button className="btn btn-outline-success">Unlock</button>
+                <button className="btn btn-outline-warning" onClick={handleBlockUser}>Block</button>
+                <button className="btn btn-outline-success" onClick={handleUnlockUser}>Unlock</button>
                 <button className="btn btn-danger">Delete</button>
             </div>
 
