@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { users } from '../data/userData';
 import { useAuth } from '../hooks/useAuth';
 import { getAllUsers } from '../api/usersAPI';
-import { calculateDaysDifference, calculateTimeDifference } from '../utils';
+import { calculateDaysDifference } from '../utils';
 
 export type User = {
     id: number;
@@ -17,10 +16,9 @@ const UsersView = () => {
 
     const { userData, isLoading: authLoading } = useAuth();
     const [usersList, setUsersList] = useState<User[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useState(false);
 
-    const [selectedItems, setSelectedItems] = useState({});
-    const [isMasterChecked, setIsMasterChecked] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState<User['id'][]>([]);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -36,28 +34,25 @@ const UsersView = () => {
         }
 
         if (userData) fetchUsers();
-    }, [userData])
+    }, [userData]);
 
-    // Función para manejar el cambio del checkbox master
-    const handleMasterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const isChecked = e.target.checked;
-        setIsMasterChecked(isChecked);
-        // const newSelectedItems = Object.keys(selectedItems).reduce((acc, key) => {
-        //     acc[key] = isChecked;
-        //     return acc;
-        // }, {});
-        // setSelectedItems(newSelectedItems);
+    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            setSelectedUsers(usersList.map(user => user.id));
+        } else {
+            setSelectedUsers([]);
+        }
     };
 
-    const handleItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, checked } = e.target;
-        setSelectedItems((prevState) => ({
-            ...prevState,
-            [name]: checked,
-        }));
+    const handleSelectUser = (userId: User['id']) => {
+        setSelectedUsers(prevSelectedUsers => {
+            if (prevSelectedUsers.includes(userId)) {
+                return prevSelectedUsers.filter(id => id !== userId);
+            } else {
+                return [...prevSelectedUsers, userId];
+            }
+        });
     };
-
-
 
 
     if (authLoading) return 'Loading...';
@@ -89,8 +84,8 @@ const UsersView = () => {
                                     className='mx-5 my-2'
                                     type="checkbox"
                                     id='masterCheckbox'
-                                    onChange={handleMasterChange}
-                                    checked={isMasterChecked}
+                                    onChange={handleSelectAll}
+                                    checked={usersList.length === selectedUsers.length}
                                 />
                             </td>
                             <th scope="col">ID</th>
@@ -110,7 +105,8 @@ const UsersView = () => {
                                         type="checkbox"
                                         name={user.id.toString()}
                                         id={user.id.toString()}
-                                        onChange={handleItemChange}
+                                        onChange={() => handleSelectUser(user.id)}
+                                        checked={selectedUsers.includes(user.id)}
                                     />
                                 </td>
                                 <td>{user.id}</td>
