@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { users } from '../data/userData';
-import { isAxiosError } from 'axios';
-import api from '../lib/axios';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { getAllUsers } from '../api/usersAPI';
 
-type User = {
+export type User = {
     id: number;
     name: string;
     email: string;
@@ -15,38 +14,52 @@ type User = {
 
 const UsersView = () => {
 
-    const [userData, setUserData] = useState<User | null>(null);
-    const [isError, setIsError] = useState(null);
+    const { userData, isLoading: authLoading } = useAuth();
+    const [usersList, setUsersList] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const navigate = useNavigate();
+    const [selectedItems, setSelectedItems] = useState({});
+    const [isMasterChecked, setIsMasterChecked] = useState(false);
 
-    const getUser = async () => {
-        setIsLoading(true);
-        try {
-            const { data } = await api.get('/auth/user');
-            setUserData(data);
-        } catch (error) {
-            if (isAxiosError(error) && error.response) {
-                setIsError(error.response.data.error);
-                throw new Error(error.response.data.error);
+    useEffect(() => {
+        const fetchUsers = async () => {
+            setIsLoading(true);
+            try {
+                const data = await getAllUsers();
+                if (data) setUsersList(data);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoading(false);
             }
-        } finally {
-            setIsLoading(false);
         }
-    }
 
-    useEffect(() => {
-        getUser();
-    }, []);
+        if (userData) fetchUsers();
+    }, [userData])
 
-    useEffect(() => {
-        if (isError) {
-            navigate('/auth/login');
-        }
-    }, [isError, navigate]);
+    // Función para manejar el cambio del checkbox master
+    const handleMasterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setIsMasterChecked(isChecked);
+        // const newSelectedItems = Object.keys(selectedItems).reduce((acc, key) => {
+        //     acc[key] = isChecked;
+        //     return acc;
+        // }, {});
+        // setSelectedItems(newSelectedItems);
+    };
 
-    if (isLoading) return 'Loading...';
+    const handleItemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, checked } = e.target;
+        setSelectedItems((prevState) => ({
+            ...prevState,
+            [name]: checked,
+        }));
+    };
+
+
+
+
+    if (authLoading) return 'Loading...';
 
     if (userData) return (
         <div className='container' style={{ marginTop: 20 }}>
@@ -57,13 +70,13 @@ const UsersView = () => {
                     <button type='button' className='btn btn-outline-danger'>Logout</button>
                 </div>
             </div>
+
             <hr />
-            <div className="d-flex justify-content-end">
-                <section className="w-25 d-flex justify-content-between">
-                    <button className="btn btn-warning">Block</button>
-                    <button className="btn btn-info">Unlock</button>
-                    <button className="btn btn-danger">Delete</button>
-                </section>
+
+            <div className="d-flex" style={{ gap: 20 }}>
+                <button className="btn btn-outline-warning">Block</button>
+                <button className="btn btn-outline-success">Unlock</button>
+                <button className="btn btn-danger">Delete</button>
             </div>
 
             <main>
@@ -71,7 +84,13 @@ const UsersView = () => {
                     <thead>
                         <tr>
                             <td>
-                                <input className='mx-5 my-2' type="checkbox" />
+                                <input
+                                    className='mx-5 my-2'
+                                    type="checkbox"
+                                    id='masterCheckbox'
+                                    onChange={handleMasterChange}
+                                    checked={isMasterChecked}
+                                />
                             </td>
                             <th scope="col">ID</th>
                             <th scope="col">Name</th>
@@ -82,10 +101,16 @@ const UsersView = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map(user => (
+                        {usersList.map(user => (
                             <tr className='table-row' key={user.id}>
                                 <td>
-                                    <input className='mx-5 my-2' type="checkbox" />
+                                    <input
+                                        className='mx-5 my-2'
+                                        type="checkbox"
+                                        name={user.id.toString()}
+                                        id={user.id.toString()}
+                                        onChange={handleItemChange}
+                                    />
                                 </td>
                                 <td>{user.id}</td>
                                 <td>{user.name}</td>
