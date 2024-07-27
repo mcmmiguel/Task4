@@ -54,7 +54,7 @@ const RegisterView = () => {
             <h1 className="text-center">Task4</h1>
             <hr />
             <h2 className="mt-10">Register account</h2>
-            {apiResponse && <FormMessage type={apiResponse.type}>{apiResponse.message}</FormMessage>}
+            {apiResponse?.message && <FormMessage type={apiResponse.type}>{apiResponse.message}</FormMessage>}
             <form
                 className="d-flex flex-column align-center needs-validation"
                 onSubmit={handleSubmit(handleRegister)}

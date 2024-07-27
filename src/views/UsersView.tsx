@@ -1,16 +1,61 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { users } from '../data/userData';
+import { isAxiosError } from 'axios';
+import api from '../lib/axios';
+import { useNavigate } from 'react-router-dom';
+
+type User = {
+    id: number;
+    name: string;
+    email: string;
+    lastLogin?: string;
+    registrationTime?: string;
+    isBlocked: boolean;
+}
 
 const UsersView = () => {
 
-    useEffect(() => {
+    const [userData, setUserData] = useState<User | null>(null);
+    const [isError, setIsError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
+    const navigate = useNavigate();
+
+    const getUser = async () => {
+        setIsLoading(true);
+        try {
+            const { data } = await api.get('/auth/user');
+            setUserData(data);
+        } catch (error) {
+            if (isAxiosError(error) && error.response) {
+                setIsError(error.response.data.error);
+                throw new Error(error.response.data.error);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        getUser();
     }, []);
 
-    return (
-        <>
-            <div>
-                <h1 className="text-center my-10">Users</h1>
+    useEffect(() => {
+        if (isError) {
+            navigate('/auth/login');
+        }
+    }, [isError, navigate]);
+
+    if (isLoading) return 'Loading...';
+
+    if (userData) return (
+        <div className='container' style={{ marginTop: 20 }}>
+            <div className='d-flex justify-content-between align-items-center'>
+                <h1 className="text-center m-0">Users</h1>
+                <div className='d-flex justify-content-between align-items-center' style={{ gap: 30 }}>
+                    <p className='m-0'>Welcome, {userData.name}!</p>
+                    <button type='button' className='btn btn-outline-danger'>Logout</button>
+                </div>
             </div>
             <hr />
             <div className="d-flex justify-content-end">
@@ -53,7 +98,7 @@ const UsersView = () => {
                     </tbody>
                 </table>
             </main>
-        </>
+        </div>
     )
 }
 export default UsersView
