@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form"
 import { authenticateUser } from "../api/authAPI";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import FormMessage from "../components/FormMessage";
 
@@ -83,6 +83,9 @@ const LoginView = () => {
 
                 <button className="btn btn-primary">{isLoading ? 'Signing in...' : 'Sign In'}</button>
             </form>
+
+            <p className="text-center" style={{ marginTop: 20 }}>You don't have an account? <Link to={'/auth/register'} className="">Sign up</Link></p>
+
         </div>
     )
 }

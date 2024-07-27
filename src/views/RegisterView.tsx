@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { registerAccount } from "../api/authAPI";
 import { useState } from "react";
 import FormMessage from "../components/FormMessage";
+import { Link } from "react-router-dom";
 
 export type RegisterForm = {
     name: string;
@@ -118,6 +119,8 @@ const RegisterView = () => {
 
                 <button className="btn btn-primary">{isLoading ? ' Creating account...' : 'Create account'}</button>
             </form>
+
+            <p className="text-center" style={{ marginTop: 20 }}>You have an account? <Link to={'/auth/login'} className="">Sign in!</Link></p>
         </div>
     )
 }

@@ -96,6 +96,11 @@ const UsersView = () => {
         }
     }
 
+    const handleLogout = () => {
+        localStorage.removeItem('AUTH_TOKEN');
+        navigate('/auth/login');
+    }
+
     if (authLoading) return 'Loading...';
 
     if (userData) return (
@@ -104,7 +109,7 @@ const UsersView = () => {
                 <h1 className="text-center m-0">Users</h1>
                 <div className='d-flex justify-content-between align-items-center' style={{ gap: 30 }}>
                     <p className='m-0'>Welcome, {userData.name}!</p>
-                    <button type='button' className='btn btn-outline-danger'>Logout</button>
+                    <button type='button' className='btn btn-outline-danger' onClick={handleLogout}>Logout</button>
                 </div>
             </div>
 
