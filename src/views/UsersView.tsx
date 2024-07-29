@@ -31,8 +31,7 @@ const UsersView = () => {
                 const data = await getAllUsers();
                 if (data) setUsersList(data);
             } catch (error) {
-                console.log(error);
-                navigate('/auth/login');
+                if (!userData) navigate('/auth/login');
             } finally {
                 setIsLoading(false);
             }
