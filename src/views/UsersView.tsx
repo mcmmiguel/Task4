@@ -159,7 +159,7 @@ const UsersView = () => {
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
                                 <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : '-'}</td>
-                                <td className='text-center'>{`${calculateDaysDifference(user.createdAt)}d`}</td>
+                                <td className='text-center'>{calculateDaysDifference(user.createdAt)}</td>
                                 <td className={`text-center rounded ${user.isBlocked ? 'text-danger  ' : 'text-success'}`}>{user.isBlocked ? 'Blocked' : 'Active'}</td>
                             </tr>
                         ))}
