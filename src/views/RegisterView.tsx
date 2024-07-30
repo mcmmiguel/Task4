@@ -97,8 +97,11 @@ const RegisterView = () => {
                         type="password"
                         className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                         {...register('password', {
-                            minLength: 8,
-                            required: 'Password must have at least 8 characters long'
+                            required: 'Password is required',
+                            minLength: {
+                                value: 8,
+                                message: 'Password must have at least 8 characters long'
+                            },
                         })}
                     />
                     {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
@@ -110,8 +113,8 @@ const RegisterView = () => {
                         type="password"
                         className={`form-control ${errors.password_confirmation ? 'is-invalid' : ''}`}
                         {...register('password_confirmation', {
+                            required: 'Please confirm your password',
                             validate: value => value === password || 'Passwords do not match',
-                            required: 'Please confirm your password'
                         })}
                     />
                     {errors.password_confirmation && <div className="invalid-feedback">{errors.password_confirmation.message}</div>}

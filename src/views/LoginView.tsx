@@ -73,8 +73,11 @@ const LoginView = () => {
                         type="password"
                         className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                         {...register('password', {
-                            minLength: 8,
-                            required: 'Invalid password'
+                            required: 'Password is required',
+                            minLength: {
+                                value: 8,
+                                message: 'Password must have at least 8 characters long'
+                            },
                         })}
                     />
                     {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
