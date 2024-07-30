@@ -6,6 +6,7 @@ import { useUserActions } from '../hooks/useUserActions';
 import { User } from '../types';
 import UsersTable from '../components/UsersTable';
 import ActionButton from '../components/ActionButton';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const UsersView = () => {
 
@@ -15,19 +16,15 @@ const UsersView = () => {
 
     const navigate = useNavigate()
 
-    const [, setIsLoading] = useState(false);
     const { isFetching, processUsers } = useUserActions();
 
     useEffect(() => {
         const fetchUsers = async () => {
-            setIsLoading(true);
             try {
                 const data = await getAllUsers();
                 if (data) setFetchedUsersList(data);
             } catch (error) {
                 if (!userData) navigate('/auth/login');
-            } finally {
-                setIsLoading(false);
             }
         }
 
@@ -49,7 +46,7 @@ const UsersView = () => {
         navigate('/auth/login');
     }
 
-    if (authLoading) return 'Loading...';
+    if (authLoading) return <LoadingSpinner />;
 
     if (userData) return (
         <div className='container' style={{ marginTop: 20 }}>
