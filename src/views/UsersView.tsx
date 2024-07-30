@@ -23,9 +23,7 @@ const UsersView = () => {
             try {
                 const data = await getAllUsers();
                 if (data) setFetchedUsersList(data);
-                console.log(userData);
             } catch (error) {
-                console.log(userData);
                 navigate('/auth/login');
             }
         }
