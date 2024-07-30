@@ -76,21 +76,21 @@ const UsersView = () => {
     }
 
     const handleBlockUser = async () => {
-        if (confirm('Are you sure to block this user(s)?')) {
+        if (confirm('Are you sure you want to block this user(s)?')) {
             processUsers(selectedUsers, blockUser);
         }
 
     }
 
     const handleUnlockUser = async () => {
-        if (confirm('Are you sure to unlock this user(s)?')) {
+        if (confirm('Are you sure you want to unlock this user(s)?')) {
             processUsers(selectedUsers, unlockUser);
         }
 
     }
 
     const handleDeleteUser = async () => {
-        if (confirm('Are you sure to delete this user(s)?')) {
+        if (confirm('Are you sure you want to delete this user(s)?')) {
             processUsers(selectedUsers, deleteUser);
         }
     }
