@@ -1,8 +1,8 @@
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { User } from "../views/UsersView";
 import { useEffect, useState } from "react";
 import api from "../lib/axios";
+import { User } from "../types";
 
 export const useAuth = () => {
     const [userData, setUserData] = useState<User | null>(null);
